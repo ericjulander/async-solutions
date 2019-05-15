@@ -12,7 +12,7 @@ function makeHttpRequest(options, body, callback) {
         });
 
         res.on("error", (err) => {
-            console.log(err);
+            callback(err, null);
         });
     });
     wrek.write(body);
@@ -54,14 +54,11 @@ function getPageDataFromOptions(options, callback) {
     };
 
     const USERS = 5;
-    var usersList = [...new Array(USERS)].map(function (data, index) {
-        return {
-            user_id: index + 1
-        };
-    });
 
-    async.each(usersList, function (data, callback) {
-        makeHttpRequest(POST_OPTIONS, JSON.stringify(data), callback);
+    async.times(USERS, function (user, callback) {
+        makeHttpRequest(POST_OPTIONS, JSON.stringify({
+            user_id: user + 1
+        }), callback);
     }, function (err) {
         getPageDataFromOptions(GET_OPTIONS)
     });
